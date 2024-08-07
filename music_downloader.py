@@ -5,19 +5,18 @@ import yt_dlp
 import os
 import threading
 
-def download_video(url, output_path='.', progress_callback=None):
+def download_audio(url, output_path='.', progress_callback=None):
     def hook(d):
         if d['status'] == 'finished':
-            print(f"\nDone downloading video: {d['filename']}")
+            print(f"\nDone downloading audio: {d['filename']}")
         elif d['status'] == 'downloading':
             if progress_callback:
                 percent = d.get('percent', 0)
                 progress_callback(percent)
 
     ydl_opts = {
-        'format': 'bestvideo+bestaudio/best',
+        'format': 'bestaudio/best',  # Download the best audio quality
         'outtmpl': f'{output_path}/%(title)s.%(ext)s',
-        'merge_output_format': 'mp4',  # Merge audio and video into mp4 format
         'progress_hooks': [hook],
         'noplaylist': True,
     }
@@ -42,7 +41,7 @@ def on_download():
     # Start download in a new thread to keep the GUI responsive
     def download_thread():
         try:
-            download_video(url, output_path, progress_callback=update_progress)
+            download_audio(url, output_path, progress_callback=update_progress)
             progress_bar['value'] = 100
             messagebox.showinfo("Success", "Download complete!")
             # Clear fields after successful download
@@ -65,10 +64,10 @@ def browse_directory():
 
 # Create the main application window
 app = tk.Tk()
-app.title("YouTube Video Downloader")
+app.title("YouTube Audio Downloader")
 
 # Create and place the widgets
-tk.Label(app, text="YouTube Video URL:").pack(padx=10, pady=5)
+tk.Label(app, text="YouTube URL:").pack(padx=10, pady=5)
 url_entry = tk.Entry(app, width=50)
 url_entry.pack(padx=10, pady=5)
 
